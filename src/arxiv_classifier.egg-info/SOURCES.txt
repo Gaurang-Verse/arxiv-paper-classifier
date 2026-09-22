@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+src/arxiv_classifier/__init__.py
+src/arxiv_classifier.egg-info/PKG-INFO
+src/arxiv_classifier.egg-info/SOURCES.txt
+src/arxiv_classifier.egg-info/dependency_links.txt
+src/arxiv_classifier.egg-info/top_level.txt
+src/arxiv_classifier/api/__init__.py
+src/arxiv_classifier/data/__init__.py
+src/arxiv_classifier/features/__init__.py
+src/arxiv_classifier/inference/__init__.py
+src/arxiv_classifier/models/__init__.py
