@@ -1,0 +1,21 @@
+# Data paths and sampling configuration.
+raw_path: "data/raw/arxiv-metadata-oai-snapshot.json"
+sample_output_path: "data/processed/sample_150k.parquet"
+
+# Row count measured during Phase 3 validation. The sampling script asserts
+# the file still has exactly this many rows, so that a changed/re-downloaded
+# dataset fails loudly instead of silently producing a different sample.
+expected_total_rows: 2895350
+
+sample_size: 150000
+random_seed: 42
+chunksize: 100000
+
+# Columns kept in the subsample. Dropped columns were excluded based on the
+# measured null rates and reasoning recorded in docs/data_validation.md.
+keep_columns:
+  - id
+  - title
+  - abstract
+  - categories
+  - update_date

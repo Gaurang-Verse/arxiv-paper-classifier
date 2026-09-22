@@ -16,11 +16,14 @@ Computed via `scripts/compute_eda_stats.py` on the full raw file
   records).
 
 **Decision:** categories with fewer than 50 papers will be excluded from
-the model's target label set (affects `ao-sci`, `bayes-an`, `plasm-ph` —
-71 papers total, 0.002% of the dataset). A model cannot learn a reliable
-decision boundary from 16–38 examples, and including them would only add
-noise to multi-label evaluation metrics. Papers keep their other valid
-labels; they simply won't be evaluated on these three rare tags.
+the model's target label set (affects `acc-phys`: 49, `plasm-ph`: 38,
+`ao-sci`: 17, `bayes-an`: 16 — 4 categories, ~120 combined category-label
+occurrences out of 2,895,350 papers, negligible). Verified against the
+actual preprocessing code output (`scripts/check_preprocessing.py`):
+label space size 172 (176 − 4), matching this list exactly. A model cannot
+learn a reliable decision boundary from 16–49 examples, and including them
+would only add noise to multi-label evaluation metrics. Papers keep their
+other valid labels; they simply won't be evaluated on these four rare tags.
 
 ## Labels per paper
 
