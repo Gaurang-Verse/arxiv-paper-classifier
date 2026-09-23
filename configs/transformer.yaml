@@ -1,0 +1,34 @@
+# Transformer fine-tuning configuration (Phase 6).
+sample_path: "data/processed/sample_150k.parquet"
+eda_stats_path: "data/processed/eda_stats.json"
+min_label_frequency: 50
+
+# Same split fractions/seed as configs/baseline.yaml — this regenerates
+# the IDENTICAL train/val/test index split as the baseline (same 150K
+# sample, same seed = same deterministic shuffle), so the validation set
+# used here is the exact same 15,000 papers the baseline was evaluated on.
+train_fraction: 0.8
+val_fraction: 0.1
+test_fraction: 0.1
+random_seed: 42
+
+# Decided in this session: subsample the TRAINING portion only (not val/test)
+# down to this size, since transformer fine-tuning is far slower per-example
+# than the baseline. A separate seed controls this subsampling so it's
+# reproducible independently of the split above.
+train_subsample_size: 20000
+train_subsample_seed: 123
+
+model_name: "distilbert-base-uncased"
+max_length: 256
+
+training:
+  num_train_epochs: 3
+  per_device_train_batch_size: 16
+  per_device_eval_batch_size: 32
+  learning_rate: 2.0e-5
+  weight_decay: 0.01
+
+prediction_threshold: 0.5
+output_dir: "data/processed/transformer_checkpoints"
+results_path: "data/processed/transformer_results.json"

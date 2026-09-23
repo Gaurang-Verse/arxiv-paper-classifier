@@ -1,0 +1,100 @@
+{
+  "config": {
+    "sample_path": "data/processed/sample_150k.parquet",
+    "eda_stats_path": "data/processed/eda_stats.json",
+    "min_label_frequency": 50,
+    "train_fraction": 0.8,
+    "val_fraction": 0.1,
+    "test_fraction": 0.1,
+    "random_seed": 42,
+    "train_subsample_size": 20000,
+    "train_subsample_seed": 123,
+    "model_name": "distilbert-base-uncased",
+    "max_length": 256,
+    "training": {
+      "num_train_epochs": 3,
+      "per_device_train_batch_size": 16,
+      "per_device_eval_batch_size": 32,
+      "learning_rate": 2e-05,
+      "weight_decay": 0.01
+    },
+    "prediction_threshold": 0.5,
+    "output_dir": "data/processed/transformer_checkpoints",
+    "results_path": "data/processed/transformer_results.json"
+  },
+  "n_train": 20000,
+  "n_val": 15000,
+  "device_used": "mps",
+  "final_eval_results_at_default_threshold": {
+    "eval_loss": 0.03241889551281929,
+    "eval_micro_f1": 0.22537529628654202,
+    "eval_macro_f1": 0.025786165107404516,
+    "eval_runtime": 376.9947,
+    "eval_samples_per_second": 39.788,
+    "eval_steps_per_second": 1.244,
+    "epoch": 3.0,
+    "step": 3750
+  },
+  "threshold_sweep": [
+    {
+      "threshold": 0.05,
+      "micro_f1": 0.31430244733526186,
+      "macro_f1": 0.12038733774728239
+    },
+    {
+      "threshold": 0.1,
+      "micro_f1": 0.39566219490573845,
+      "macro_f1": 0.10295941074071989
+    },
+    {
+      "threshold": 0.15,
+      "micro_f1": 0.41437431039074685,
+      "macro_f1": 0.09090834011837844
+    },
+    {
+      "threshold": 0.2,
+      "micro_f1": 0.39549092548754367,
+      "macro_f1": 0.0750979118024335
+    },
+    {
+      "threshold": 0.25,
+      "micro_f1": 0.35777869785736466,
+      "macro_f1": 0.05721380678863004
+    },
+    {
+      "threshold": 0.3,
+      "micro_f1": 0.32162693326497477,
+      "macro_f1": 0.044109571574795295
+    },
+    {
+      "threshold": 0.35,
+      "micro_f1": 0.2897929619122352,
+      "macro_f1": 0.035666289193208925
+    },
+    {
+      "threshold": 0.4,
+      "micro_f1": 0.2676554335242029,
+      "macro_f1": 0.0310825657202449
+    },
+    {
+      "threshold": 0.45,
+      "micro_f1": 0.24776714001156588,
+      "macro_f1": 0.028696753079566758
+    },
+    {
+      "threshold": 0.5,
+      "micro_f1": 0.22537529628654202,
+      "macro_f1": 0.025786165107404516
+    }
+  ],
+  "best_threshold_by_micro_f1": {
+    "threshold": 0.15,
+    "micro_f1": 0.41437431039074685,
+    "macro_f1": 0.09090834011837844
+  },
+  "best_threshold_by_macro_f1": {
+    "threshold": 0.05,
+    "micro_f1": 0.31430244733526186,
+    "macro_f1": 0.12038733774728239
+  }
+}

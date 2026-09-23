@@ -1,0 +1,102 @@
+{
+  "config_path": "configs/transformer_full.yaml",
+  "config": {
+    "sample_path": "data/processed/sample_150k.parquet",
+    "eda_stats_path": "data/processed/eda_stats.json",
+    "min_label_frequency": 50,
+    "train_fraction": 0.8,
+    "val_fraction": 0.1,
+    "test_fraction": 0.1,
+    "random_seed": 42,
+    "train_subsample_size": null,
+    "train_subsample_seed": 123,
+    "model_name": "distilbert-base-uncased",
+    "max_length": 256,
+    "training": {
+      "num_train_epochs": 3,
+      "per_device_train_batch_size": 32,
+      "per_device_eval_batch_size": 64,
+      "learning_rate": 2e-05,
+      "weight_decay": 0.01
+    },
+    "prediction_threshold": 0.5,
+    "output_dir": "data/processed/transformer_full_checkpoints",
+    "results_path": "data/processed/transformer_full_results.json"
+  },
+  "n_train": 120000,
+  "n_val": 15000,
+  "device_used": "cuda",
+  "fp16_used": true,
+  "final_eval_results_at_default_threshold": {
+    "eval_loss": 0.021095866337418556,
+    "eval_micro_f1": 0.5475228996355757,
+    "eval_macro_f1": 0.22759638596101847,
+    "eval_runtime": 41.3556,
+    "eval_samples_per_second": 362.708,
+    "eval_steps_per_second": 5.682,
+    "epoch": 3.0,
+    "step": 11250
+  },
+  "threshold_sweep": [
+    {
+      "threshold": 0.05,
+      "micro_f1": 0.4445772393955354,
+      "macro_f1": 0.3020083663475678
+    },
+    {
+      "threshold": 0.1,
+      "micro_f1": 0.5381374873010498,
+      "macro_f1": 0.3344785715421657
+    },
+    {
+      "threshold": 0.15,
+      "micro_f1": 0.5766809049201076,
+      "macro_f1": 0.3327925949072
+    },
+    {
+      "threshold": 0.2,
+      "micro_f1": 0.5933918921297682,
+      "macro_f1": 0.3233964411403185
+    },
+    {
+      "threshold": 0.25,
+      "micro_f1": 0.6007218286325358,
+      "macro_f1": 0.3082272751055974
+    },
+    {
+      "threshold": 0.3,
+      "micro_f1": 0.6005900905483772,
+      "macro_f1": 0.29472841160179036
+    },
+    {
+      "threshold": 0.35,
+      "micro_f1": 0.5921143250688705,
+      "macro_f1": 0.2773889098543111
+    },
+    {
+      "threshold": 0.4,
+      "micro_f1": 0.5812598780763152,
+      "macro_f1": 0.2624082955503005
+    },
+    {
+      "threshold": 0.45,
+      "micro_f1": 0.5667846190139184,
+      "macro_f1": 0.24585989277201573
+    },
+    {
+      "threshold": 0.5,
+      "micro_f1": 0.5475228996355757,
+      "macro_f1": 0.22759638596101847
+    }
+  ],
+  "best_threshold_by_micro_f1": {
+    "threshold": 0.25,
+    "micro_f1": 0.6007218286325358,
+    "macro_f1": 0.3082272751055974
+  },
+  "best_threshold_by_macro_f1": {
+    "threshold": 0.1,
+    "micro_f1": 0.5381374873010498,
+    "macro_f1": 0.3344785715421657
+  }
+}
