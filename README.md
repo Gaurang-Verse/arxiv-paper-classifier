@@ -239,6 +239,11 @@ Paper metadata is from arXiv via the
 [Kaggle arXiv dataset](https://www.kaggle.com/datasets/Cornell-University/arxiv).
 arXiv releases its metadata under
 [CC0 1.0](https://info.arxiv.org/help/license/index.html). Only titles,
+
+
+## License
+
+Code is MIT licensed (see LICENSE). Dataset metadata is CC0 1.0 — see docs/dataset.md.
 abstracts and category codes are used. No full texts. Thanks to arXiv for
 making it openly available.
 
