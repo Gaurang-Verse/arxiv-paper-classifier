@@ -2,17 +2,15 @@ import json
 import sys
 
 import numpy as np
-import pandas as pd
 import torch
 import yaml
 from transformers import Trainer, TrainingArguments
 from sklearn.metrics import f1_score
-from arxiv_classifier.tracking import log_run
-from arxiv_classifier.data.splitting import split_indices
+
 from arxiv_classifier.data.torch_dataset import ArxivTextDataset
-from arxiv_classifier.features.labels import build_label_matrix, load_label_space
-from arxiv_classifier.features.text import combine_title_abstract
 from arxiv_classifier.models.transformer_model import build_model, build_tokenizer
+from arxiv_classifier.pipeline import prepare_dataset
+from arxiv_classifier.tracking import log_run
 
 config_path = sys.argv[1] if len(sys.argv) > 1 else "configs/transformer.yaml"
 print(f"Using config: {config_path}")
@@ -20,15 +18,10 @@ print(f"Using config: {config_path}")
 with open(config_path) as f:
     config = yaml.safe_load(f)
 
-df = pd.read_parquet(config["sample_path"])
-label_space = load_label_space(config["eda_stats_path"], config["min_label_frequency"])
-Y_full, mlb, keep_mask = build_label_matrix(df["categories"], label_space)
-text_full = combine_title_abstract(df[keep_mask]).reset_index(drop=True)
-n_rows = len(text_full)
-
-train_idx, val_idx, test_idx = split_indices(
-    n_rows, config["train_fraction"], config["val_fraction"], config["random_seed"]
-)
+data = prepare_dataset(config)
+text_full, Y_full = data.text_full, data.Y_full
+label_space = data.label_space
+train_idx, val_idx, test_idx = data.train_idx, data.val_idx, data.test_idx
 
 subsample_size = config.get("train_subsample_size")
 if subsample_size in (None, "all"):

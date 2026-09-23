@@ -2,37 +2,25 @@
 
 Run: python scripts/train_baseline.py
 """
+
 import json
 
-import numpy as np
-import pandas as pd
 import yaml
 
-from arxiv_classifier.data.splitting import split_indices
-from arxiv_classifier.features.labels import build_label_matrix, load_label_space
-from arxiv_classifier.features.text import combine_title_abstract
 from arxiv_classifier.models.baseline import build_model, build_vectorizer, evaluate
+from arxiv_classifier.pipeline import prepare_dataset
 from arxiv_classifier.tracking import log_run
 
 with open("configs/baseline.yaml") as f:
     config = yaml.safe_load(f)
 
 print("Loading sample...")
-df = pd.read_parquet(config["sample_path"])
-
-label_space = load_label_space(config["eda_stats_path"], config["min_label_frequency"])
-Y_full, mlb, keep_mask = build_label_matrix(df["categories"], label_space)
-text_full = combine_title_abstract(df[keep_mask])
-
-# Reset to a clean 0..n-1 index now that dropped rows are gone, so the
-# split indices below line up correctly with both X and Y.
-text_full = text_full.reset_index(drop=True)
+data = prepare_dataset(config)
+text_full, Y_full = data.text_full, data.Y_full
+label_space = data.label_space
+train_idx, val_idx, test_idx = data.train_idx, data.val_idx, data.test_idx
 n_rows = len(text_full)
 print(f"Rows after label filtering: {n_rows}")
-
-train_idx, val_idx, test_idx = split_indices(
-    n_rows, config["train_fraction"], config["val_fraction"], config["random_seed"]
-)
 print(f"Train: {len(train_idx)}  Val: {len(val_idx)}  Test: {len(test_idx)}")
 
 # Sanity check: label distribution should be roughly similar across splits,
@@ -81,7 +69,6 @@ with open("data/processed/baseline_results.json", "w") as f:
     json.dump(output, f, indent=2)
 
 print("\nSaved results to data/processed/baseline_results.json")
-
 
 log_run(
     run_name=f"baseline_tfidf_logreg_{len(train_idx)}rows",
