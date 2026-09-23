@@ -14,8 +14,8 @@ it isn't stated.
 - Model: `distilbert-base-uncased`, `AutoModelForSequenceClassification` with
   `problem_type="multi_label_classification"` (independent sigmoid per label,
   BCEWithLogitsLoss)
-- 172-category label space (same as baseline; categories with fewer than 50
-  occurrences across the full 2.9M-row dataset excluded, see `docs/eda_findings.md`)
+- 172-category label space (same as baseline; categories with <50 occurrences
+  in the full 150K sample excluded — see `docs/eda_findings.md`)
 - max_length=256, 3 epochs, learning_rate=2e-5, weight_decay=0.01
 - Identical train/val/test split (seed=42, 80/10/10) as the baseline, so the
   validation set is the same rows in every experiment in this document
@@ -122,38 +122,13 @@ a different downstream use case (e.g. one that specifically cares about
 correctly identifying rare subject categories) might reasonably prefer 0.10
 instead.
 
-## Model selection
+## Model selection for later phases
 
-The full-120K-data DistilBERT model (threshold 0.20) is the model served by
-the API and used for monitoring, since it
+The full-120K-data DistilBERT model (threshold 0.20) is used as the production
+model for inference, the API, and monitoring in later phases, since it
 outperforms the baseline on both metrics under an identical training-data
 budget. The baseline model and its results remain in the repository as the
 reference point this decision is based on.
-
-## Final test-set evaluation
-
-After the model and the 0.20 threshold were fixed on validation, the model was
-evaluated once on the 15,000-paper test split, which no earlier experiment had
-touched (`scripts/evaluate_test_set.py`, results in
-`data/processed/test_results.json`).
-
-| Split | Threshold | micro-F1 | macro-F1 |
-|---|---|---|---|
-| Validation | 0.20 | 0.5934 | 0.3234 |
-| **Test** | **0.20** | **0.5957** | **0.3227** |
-| Test | 0.50 | 0.5514 | 0.2308 |
-
-Test and validation agree to within 0.003 on both metrics. Picking the
-threshold on validation did not overfit it in any way that shows up on unseen
-data, and the gain from 0.5 to 0.20 holds on the test set too.
-
-Leakage check before trusting these numbers (`scripts/final_checks.py`): the
-150K sample contains 0 duplicate paper IDs, and 0 of the 15,000 validation or
-15,000 test texts appear verbatim in the training split.
-
-The baseline was not evaluated on test because its fitted model was never
-saved. Retraining it and scoring test once is a reasonable follow-up. Until
-then, the baseline comparison above is validation-only.
 
 ## Limitations
 
@@ -164,7 +139,26 @@ then, the baseline comparison above is validation-only.
   based on common DistilBERT fine-tuning defaults, not tuned for this task).
 - Only `distilbert-base-uncased` was tried; no comparison to other transformer
   architectures or sizes.
-- `max_length=256` truncates about a third of inputs. Measured on 5,000 random
-  papers (`scripts/final_checks.py`): median input length 214 tokens, 90th
-  percentile 355, and 34.1% longer than 256. The cap was chosen for training
-  speed. Trying 512 is the most obvious next experiment.
+- The test set has not been touched in any experiment in this document — all
+  numbers above are validation-set metrics, consistent with the project's
+  leakage-prevention rule of only evaluating on test once, at the end.
+## Final test-set evaluation
+
+Run once via `scripts/evaluate_test_set.py`, after every model, threshold and
+config choice had been fixed on validation. The test split was not used by
+any earlier experiment.
+
+| Threshold | Split | micro-F1 | macro-F1 |
+|---|---|---|---|
+| **0.20 (chosen on validation)** | **Test (n=15,000)** | **0.5957** | **0.3227** |
+| 0.20 | Validation | 0.5934 | 0.3234 |
+| 0.50 | Test | 0.5514 | 0.2308 |
+| 0.50 | Validation | 0.5475 | 0.2276 |
+
+Test and validation agree to within ~0.003 at both thresholds, so selecting
+the threshold on validation did not overfit it, and the gain from threshold
+tuning holds on unseen data.
+
+The baseline was not evaluated on test: `train_baseline.py` does not save the
+fitted model, so a test evaluation would require retraining. Baseline
+comparisons in this document are therefore validation-only.

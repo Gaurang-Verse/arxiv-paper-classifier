@@ -1,3 +1,5 @@
+"""The split must be a disjoint, complete, seed-deterministic partition."""
+
 import numpy as np
 
 from arxiv_classifier.data.splitting import split_indices

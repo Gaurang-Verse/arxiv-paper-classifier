@@ -1,3 +1,14 @@
+"""Log the three experiments that finished before MLflow was added.
+
+The baseline and both DistilBERT runs were trained before experiment tracking
+existed in this project. Their results were already saved as JSON, so this
+script replays those exact files into MLflow. Every run it creates is tagged
+backfilled=true, so it is clear they were logged after the fact and not
+captured live. Nothing is retrained and no numbers are changed.
+
+Run: python scripts/backfill_mlflow_runs.py
+"""
+
 import json
 
 from arxiv_classifier.tracking import log_run

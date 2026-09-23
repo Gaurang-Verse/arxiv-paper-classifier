@@ -23,7 +23,7 @@ validation split (15,000 papers), 2026-09-22.
 | Macro-F1 | 0.210 |
 
 The ~2.2x gap between micro and macro F1 is the long-tail label problem
-identified in Phase 4 EDA showing up directly in model performance:
+identified during EDA showing up directly in model performance:
 micro-F1 is dominated by the model's reasonable performance on frequent
 categories, while macro-F1 (equal weight per label) is dragged down by
 categories with too few training examples to learn from.
@@ -44,18 +44,14 @@ training data):
 **66 of 172 categories (38%) scored F1 = 0.0** on validation. Their
 validation-set support is concentrated at the low end (mostly under 70
 examples, several under 10) — directly confirming that categories near
-our Phase 4 rarity cutoff are, in practice, unlearnable by this baseline
+the EDA rarity cutoff are, in practice, unlearnable by this baseline
 with 150K training rows. This is a real, measured result: the model isn't
 broken, the categories are genuinely too sparse in this training sample.
 
-## Implications for next steps
+## What happened next
 
-- This baseline number (macro-F1 0.210) is the number to beat in Phase 6.
-- The rare-category problem is worse in practice than the frequency counts
-  alone suggested. Options to consider for the next model iteration:
-  training on more data (the full 2.9M rows would give ~19x more examples
-  per category than this 150K subsample), a higher rare-category cutoff
-  than 50, or accepting that ultra-rare categories are out of scope and
-  reporting macro-F1 only over categories with reasonable support.
-- Not yet decided — to be revisited once we have Phase 6 results to
-  compare against.
+This baseline (macro-F1 0.210) became the number to beat. A DistilBERT model
+fine-tuned on the same 120,000 training rows beat it on both metrics:
+validation micro-F1 0.593 and macro-F1 0.323 at a tuned threshold of 0.20.
+The rare-category problem is still there, just smaller. See
+`docs/transformer_results.md`.

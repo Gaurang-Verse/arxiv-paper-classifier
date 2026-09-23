@@ -1,3 +1,11 @@
+"""Diagnostic kept for the record: list category strings the validator flags.
+
+An early version of the category regex flagged 21.6% of rows as malformed.
+Printing the flagged strings showed they were all valid codes like
+cond-mat.mes-hall, which proved the regex was wrong, not the data.
+See docs/data_validation.md.
+"""
+
 import pandas as pd
 
 from arxiv_classifier.data.validation import CATEGORY_PATTERN

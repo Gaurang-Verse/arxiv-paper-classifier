@@ -2,7 +2,7 @@
 raw_path: "data/raw/arxiv-metadata-oai-snapshot.json"
 sample_output_path: "data/processed/sample_150k.parquet"
 
-# Row count measured during Phase 3 validation. The sampling script asserts
+# Row count measured by the raw-data validation (docs/data_validation.md). The sampling script asserts
 # the file still has exactly this many rows, so that a changed/re-downloaded
 # dataset fails loudly instead of silently producing a different sample.
 expected_total_rows: 2895350

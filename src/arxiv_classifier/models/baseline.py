@@ -9,6 +9,7 @@ from sklearn.multiclass import OneVsRestClassifier
 
 
 def build_vectorizer(config: dict) -> TfidfVectorizer:
+    """TF-IDF over word 1-2 grams. Fit it on the training split only."""
     return TfidfVectorizer(
         max_features=config["max_features"],
         ngram_range=tuple(config["ngram_range"]),
@@ -18,6 +19,7 @@ def build_vectorizer(config: dict) -> TfidfVectorizer:
 
 
 def build_model(config: dict) -> OneVsRestClassifier:
+    """One independent logistic regression per label (multi-label via OvR)."""
     base = LogisticRegression(C=config["C"], max_iter=config["max_iter"])
     return OneVsRestClassifier(base)
 
@@ -27,7 +29,7 @@ def evaluate(y_true, y_pred, label_names: list[str]) -> dict:
 
     Micro-F1 reflects overall correctness weighted by label frequency.
     Macro-F1 treats every label equally, which is what actually exposes
-    how badly we do on the long-tail categories found in Phase 4 — a
+    how badly we do on the long-tail categories (docs/eda_findings.md) - a
     single averaged number would hide that entirely.
     """
     micro_f1 = f1_score(y_true, y_pred, average="micro", zero_division=0)

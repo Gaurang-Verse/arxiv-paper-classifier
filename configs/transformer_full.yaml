@@ -1,12 +1,21 @@
+# DistilBERT fine-tuning on the FULL training split. This is the model that
+# ships in the API. Trained on a Google Colab T4 GPU (fp16), about 42 minutes.
+#
+#   python scripts/train_transformer.py configs/transformer_full.yaml
+
 sample_path: "data/processed/sample_150k.parquet"
 eda_stats_path: "data/processed/eda_stats.json"
 min_label_frequency: 50
 
+# Same fractions and seed as the baseline, so both models see the exact same
+# train/val/test rows.
 train_fraction: 0.8
 val_fraction: 0.1
 test_fraction: 0.1
 random_seed: 42
 
+# null = no subsampling: train on all 120,000 training rows, the same data
+# the baseline used. (configs/transformer.yaml is the 20K-row local run.)
 train_subsample_size: null
 train_subsample_seed: 123
 
@@ -15,11 +24,15 @@ max_length: 256
 
 training:
   num_train_epochs: 3
+  # Larger batches than the local config: a T4 has the memory for it.
   per_device_train_batch_size: 32
   per_device_eval_batch_size: 64
+  # Written as 2.0e-5, not 2e-5: PyYAML reads "2e-5" as a string.
   learning_rate: 2.0e-5
   weight_decay: 0.01
 
+# Threshold used for the per-epoch metrics during training only. The serving
+# threshold (0.20) was picked afterwards from a sweep; see configs/api.yaml.
 prediction_threshold: 0.5
 output_dir: "data/processed/transformer_full_checkpoints"
 results_path: "data/processed/transformer_full_results.json"

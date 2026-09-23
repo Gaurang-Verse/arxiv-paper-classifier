@@ -1,3 +1,10 @@
+"""Predictor logic tests: probability mapping, thresholding, sorting.
+
+Uses stub tokenizer/model objects so the tests run in milliseconds without
+the trained weights. The real model is exercised by
+scripts/test_inference_manual.py.
+"""
+
 import torch
 
 from arxiv_classifier.inference import Predictor
@@ -15,7 +22,10 @@ class _StubModel:
     def __call__(self, **kwargs):
         return _StubOutput(self._logits)
 
+
 class _StubBatchEncoding(dict):
+    """Mimics the Hugging Face BatchEncoding, which supports .to(device)."""
+
     def to(self, device):
         return self
 
@@ -26,6 +36,7 @@ class _StubTokenizer:
 
 
 def _make_predictor(logits_values, label_space, threshold=0.2):
+    # Bypass __init__ (which loads real weights) and wire in the stubs directly.
     predictor = object.__new__(Predictor)
     predictor.label_space = label_space
     predictor.max_length = 256

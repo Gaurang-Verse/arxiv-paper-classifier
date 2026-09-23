@@ -1,4 +1,11 @@
-"""Verify text and label preprocessing before training anything."""
+"""Sanity-check text and label preprocessing before training anything.
+
+Prints label-space size, rows dropped for having no in-scope labels,
+label-matrix shape, and a sample input text.
+Run: python scripts/check_preprocessing.py
+"""
+
+import json
 
 import pandas as pd
 import yaml
@@ -14,7 +21,9 @@ print(f"Loaded sample: {df.shape}")
 
 label_space = load_label_space(config["eda_stats_path"], config["min_label_frequency"])
 print(f"Label space size: {len(label_space)}")
-print(f"Excluded from label space: 176 - {len(label_space)} = {176 - len(label_space)}")
+with open(config["eda_stats_path"]) as f:
+    n_observed = len(json.load(f)["category_frequency"])
+print(f"Excluded from label space: {n_observed} - {len(label_space)} = {n_observed - len(label_space)}")
 
 Y, mlb, keep_mask = build_label_matrix(df["categories"], label_space)
 print(f"\nPapers dropped (no labels left after filtering): {(~keep_mask).sum()}")

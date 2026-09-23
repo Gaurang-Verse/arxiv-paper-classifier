@@ -1,9 +1,8 @@
 """Inference interface for the trained arXiv category classifier.
 
-Loads the fine-tuned DistilBERT model once and serves predictions. This is
-the interface the FastAPI layer (Phase 11) calls directly -- keeping it
-separate from the API means it can be tested and used standalone (e.g. from
-a notebook or a batch script) without spinning up a web server.
+Loads the fine-tuned DistilBERT model once and serves predictions. The
+FastAPI app calls this directly. Keeping it separate from the web layer means
+it can be tested on its own and reused from a notebook or batch script.
 """
 
 import torch
@@ -13,6 +12,14 @@ from arxiv_classifier.features.labels import load_label_space
 
 
 class Predictor:
+    """Wraps tokenizer + model + label space behind a text-in, labels-out API.
+
+    The label space is rebuilt from the same EDA stats and frequency cutoff
+    used at training time, and checked against the model's output size, so a
+    mismatched model/config pair fails at startup instead of silently
+    returning the wrong category names.
+    """
+
     def __init__(
         self,
         model_dir: str,

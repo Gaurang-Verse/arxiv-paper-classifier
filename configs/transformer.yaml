@@ -1,4 +1,6 @@
-# Transformer fine-tuning configuration (Phase 6).
+# DistilBERT fine-tuning on a 20,000-row training subsample.
+# This was the first transformer run, done locally on an Apple M4 (MPS),
+# about 2 hours. The shipped model uses configs/transformer_full.yaml.
 sample_path: "data/processed/sample_150k.parquet"
 eda_stats_path: "data/processed/eda_stats.json"
 min_label_frequency: 50
@@ -12,9 +14,9 @@ val_fraction: 0.1
 test_fraction: 0.1
 random_seed: 42
 
-# Decided in this session: subsample the TRAINING portion only (not val/test)
-# down to this size, since transformer fine-tuning is far slower per-example
-# than the baseline. A separate seed controls this subsampling so it's
+# Subsample the TRAINING portion only (never val/test) down to this size,
+# because fine-tuning on a laptop is far slower per example than the
+# baseline. A separate seed controls this subsampling so it's
 # reproducible independently of the split above.
 train_subsample_size: 20000
 train_subsample_seed: 123
@@ -26,7 +28,7 @@ training:
   num_train_epochs: 3
   per_device_train_batch_size: 16
   per_device_eval_batch_size: 32
-  learning_rate: 2.0e-5
+  learning_rate: 2.0e-5   # not "2e-5": PyYAML parses that as a string
   weight_decay: 0.01
 
 prediction_threshold: 0.5

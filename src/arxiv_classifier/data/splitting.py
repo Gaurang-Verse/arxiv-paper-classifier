@@ -1,4 +1,4 @@
-"""Train/validation/test splitting for the baseline dataset."""
+"""Train/validation/test splitting shared by every model in the project."""
 
 import numpy as np
 

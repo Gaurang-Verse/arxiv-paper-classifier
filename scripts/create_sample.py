@@ -1,4 +1,8 @@
-"""Entry point: build the baseline development subsample."""
+"""Draw the reproducible 150,000-paper sample used by every model.
+
+Reads configs/data.yaml and writes data/processed/sample_150k.parquet.
+Run: python scripts/create_sample.py
+"""
 
 import os
 

@@ -1,5 +1,16 @@
+# Serving configuration for the FastAPI app (src/arxiv_classifier/api.py).
+
+# Fine-tuned DistilBERT trained on the full 120K training split
+# (configs/transformer_full.yaml). Not in git; see README for how to produce it.
 model_dir: "data/processed/transformer_full_checkpoints/final"
+
+# The label space must be rebuilt exactly as it was at training time,
+# otherwise output column i would be mapped to the wrong category.
 eda_stats_path: "data/processed/eda_stats.json"
 min_label_frequency: 50
+
 max_length: 256
+
+# Chosen on the validation set as a compromise between micro- and macro-F1.
+# See docs/transformer_results.md ("Threshold selection").
 threshold: 0.20

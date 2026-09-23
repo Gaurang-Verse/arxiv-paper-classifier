@@ -1,5 +1,7 @@
-"""Manual smoke test for the Predictor -- run this to sanity-check inference
-on hand-written examples that are NOT from the training/validation data.
+"""Manual smoke test: run the trained model on three hand-written abstracts.
+
+The examples are written for this script and are not from the dataset, so a
+sensible answer shows the model generalises rather than recalls.
 
 Run: python scripts/test_inference_manual.py
 """

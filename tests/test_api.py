@@ -1,3 +1,10 @@
+"""API tests: routing, request validation, threshold handling, metrics.
+
+The real model is swapped for a fake predictor with fixed probabilities.
+These tests cover the web layer, not model quality, and loading 250MB of
+weights per test run would make CI slow for no benefit.
+"""
+
 import pytest
 from fastapi.testclient import TestClient
 

@@ -10,7 +10,7 @@ def load_label_space(stats_path: str, min_frequency: int) -> list[str]:
     """Return the sorted list of category codes we will predict.
 
     The label space is derived from dataset-wide category frequencies
-    measured in Phase 4, not from the training split. This is deliberate:
+    measured during EDA (docs/eda_findings.md), not from the training split. This is deliberate:
     the label space is a declared vocabulary (the arXiv taxonomy, minus
     codes too rare to learn), not something inferred from the relationship
     between features and targets, so fixing it up front is not leakage.

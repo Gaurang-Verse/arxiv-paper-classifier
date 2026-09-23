@@ -1,3 +1,5 @@
+"""End-to-end data preparation on a tiny synthetic dataset written to tmp_path."""
+
 import json
 
 import pandas as pd

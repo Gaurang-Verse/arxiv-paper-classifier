@@ -1,3 +1,5 @@
+"""Title + abstract normalisation."""
+
 import pandas as pd
 
 from arxiv_classifier.features.text import combine_title_abstract

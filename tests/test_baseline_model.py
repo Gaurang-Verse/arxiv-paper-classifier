@@ -1,3 +1,5 @@
+"""Baseline builders read their config, and evaluate() computes F1 correctly."""
+
 import numpy as np
 
 from arxiv_classifier.models.baseline import build_model, build_vectorizer, evaluate

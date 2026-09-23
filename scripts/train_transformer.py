@@ -1,3 +1,22 @@
+"""Fine-tune DistilBERT for multi-label arXiv category classification.
+
+Usage:
+    python scripts/train_transformer.py                               # 20K-row run
+    python scripts/train_transformer.py configs/transformer_full.yaml # full run
+
+What it does:
+  1. Builds the same train/val/test split as the baseline (pipeline.py).
+  2. Optionally subsamples the training rows (never val/test).
+  3. Fine-tunes with Hugging Face Trainer, evaluating on validation each epoch.
+  4. Saves the final model once, not a checkpoint per epoch.
+  5. Sweeps the decision threshold on validation. A fixed 0.5 cutoff turned
+     out to be badly calibrated for 172 independent sigmoids
+     (see docs/transformer_results.md).
+  6. Writes a results JSON and logs the run to MLflow.
+
+Picks CUDA > MPS > CPU automatically. fp16 is only enabled on CUDA.
+"""
+
 import json
 import sys
 
@@ -23,6 +42,8 @@ text_full, Y_full = data.text_full, data.Y_full
 label_space = data.label_space
 train_idx, val_idx, test_idx = data.train_idx, data.val_idx, data.test_idx
 
+# Separate seed from the split seed, so changing the subsample size never
+# changes which rows land in validation or test.
 subsample_size = config.get("train_subsample_size")
 if subsample_size in (None, "all"):
     print(f"No subsampling: using full training split ({len(train_idx)} rows)")
@@ -66,7 +87,7 @@ training_args = TrainingArguments(
     learning_rate=float(config["training"]["learning_rate"]),
     weight_decay=config["training"]["weight_decay"],
     eval_strategy="epoch",
-    save_strategy="no",
+    save_strategy="no",  # one explicit save at the end instead of 250MB per epoch
     logging_steps=50,
     report_to="none",
     fp16=use_fp16,
@@ -82,6 +103,8 @@ trainer = Trainer(
 
 trainer.train()
 
+# Take the last epoch's eval metrics from the training log. Calling
+# trainer.evaluate() again would just recompute the same numbers.
 eval_history = [log for log in trainer.state.log_history if "eval_loss" in log]
 eval_results = eval_history[-1] if eval_history else {}
 
@@ -91,7 +114,9 @@ trainer.save_model(final_model_dir)
 tokenizer.save_pretrained(final_model_dir)
 print(f"Saved final model to {final_model_dir}")
 
-# --- Threshold sweep diagnostic ---
+# --- Threshold sweep (validation only) ---
+# Reuses the trained model's raw logits, so trying ten thresholds costs one
+# prediction pass rather than ten training runs.
 predict_output = trainer.predict(val_dataset)
 val_logits = predict_output.predictions
 val_labels = predict_output.label_ids

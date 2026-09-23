@@ -1,4 +1,7 @@
-"""Summarize per-label performance from the saved baseline results."""
+"""Summarize per-label baseline performance: best/worst categories and F1=0 labels.
+
+Run: python scripts/inspect_baseline_results.py
+"""
 
 import json
 

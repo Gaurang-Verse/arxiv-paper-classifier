@@ -1,8 +1,12 @@
 """FastAPI application serving the arXiv category classifier.
 
-The model is loaded once at startup (via the lifespan context manager) and
-reused across requests -- loading it per-request would be far too slow and
-wasteful, so this is a deliberate choice, not an accident.
+Endpoints:
+    GET  /health   liveness check
+    POST /predict  title + abstract -> predicted categories and probabilities
+    GET  /metrics  Prometheus metrics (see docs/monitoring.md)
+
+The model is loaded once at startup in the lifespan hook and shared across
+requests. Loading a 250MB model per request would dominate latency.
 """
 
 import json
@@ -17,6 +21,7 @@ from pydantic import BaseModel, Field
 
 from arxiv_classifier.inference import Predictor
 
+# Paths are relative to the repo root (or /app in the Docker image).
 with open("configs/api.yaml") as f:
     API_CONFIG = yaml.safe_load(f)
 
@@ -34,6 +39,7 @@ PREDICTED_CATEGORY_COUNT = Histogram(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Load the model before the server accepts traffic; release it on shutdown."""
     app.state.predictor = Predictor(
         model_dir=API_CONFIG["model_dir"],
         eda_stats_path=API_CONFIG["eda_stats_path"],
@@ -91,6 +97,7 @@ def predict(request: PredictRequest):
     predicted.sort(key=lambda label: probabilities[label], reverse=True)
     latency = time.perf_counter() - start
 
+    # Request text is intentionally not logged: abstracts may be unpublished work.
     PREDICTION_REQUESTS.inc()
     PREDICTION_LATENCY.observe(latency)
     PREDICTED_CATEGORY_COUNT.observe(len(predicted))

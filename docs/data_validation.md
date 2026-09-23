@@ -34,9 +34,11 @@ Measured on the full raw file (2,895,350 rows) on 2026-09-22, via
 - **Target:** `categories` (split on whitespace into a list of labels).
 - **Kept as metadata only (not model input):** `authors`, `authors_parsed`,
   `versions`, `update_date`.
-- **Duplicate IDs (26 rows):** will be de-duplicated, keeping the first
-  occurrence, during the preprocessing step (Phase 4/5) — not yet
-  implemented as of this document.
+- **Duplicate IDs (26 rows):** a de-duplication step was planned but never
+  built. It turned out not to matter for this project: the 150,000-row random
+  sample contains 0 duplicate IDs (measured with `scripts/final_checks.py`).
+  Anyone training on the full 2.9M rows should add the de-duplication step
+  first.
 
 ## Known limitation in the validation script's development
 

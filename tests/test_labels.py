@@ -1,3 +1,5 @@
+"""Label-space filtering and multi-hot encoding, including column order."""
+
 import json
 
 import pandas as pd

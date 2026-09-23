@@ -1,0 +1,14 @@
+{
+  "n_test": 15000,
+  "device_used": "mps",
+  "chosen_threshold": {
+    "threshold": 0.2,
+    "micro_f1": 0.5956913296839131,
+    "macro_f1": 0.32266629448141365
+  },
+  "default_threshold": {
+    "threshold": 0.5,
+    "micro_f1": 0.5513732463939933,
+    "macro_f1": 0.23080580638341666
+  }
+}

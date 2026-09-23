@@ -38,7 +38,12 @@ other valid labels; they simply won't be evaluated on these four rare tags.
 - Mean abstract length: 144.19 words. ~83% of abstracts fall in the
   80-320 word range; only 1,473 of 2,895,350 (0.05%) exceed 320 words.
 
-**Decision:** a standard transformer max-sequence-length (e.g. 512 tokens)
-will cover the overwhelming majority of abstracts without truncation. No
-elaborate truncation/chunking strategy needed; accept truncation on the
-negligible long-tail of outlier abstracts.
+**Decision at EDA time:** a standard transformer max-sequence-length of 512
+tokens would cover almost every abstract, so no chunking strategy is needed.
+
+**What actually happened:** the DistilBERT runs used `max_length=256` to keep
+training time down. Measured later on 5,000 random title + abstract inputs
+(`scripts/final_checks.py`), the median length is 214 tokens, the 90th
+percentile 355, and 34.1% of inputs are longer than 256 and get truncated.
+That is a real cost of the speed trade-off, recorded in
+`docs/transformer_results.md` under Limitations.
