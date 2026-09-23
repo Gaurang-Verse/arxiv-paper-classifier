@@ -2,7 +2,6 @@
 
 Run: python scripts/train_baseline.py
 """
-
 import json
 
 import numpy as np
@@ -13,6 +12,7 @@ from arxiv_classifier.data.splitting import split_indices
 from arxiv_classifier.features.labels import build_label_matrix, load_label_space
 from arxiv_classifier.features.text import combine_title_abstract
 from arxiv_classifier.models.baseline import build_model, build_vectorizer, evaluate
+from arxiv_classifier.tracking import log_run
 
 with open("configs/baseline.yaml") as f:
     config = yaml.safe_load(f)
@@ -81,3 +81,11 @@ with open("data/processed/baseline_results.json", "w") as f:
     json.dump(output, f, indent=2)
 
 print("\nSaved results to data/processed/baseline_results.json")
+
+
+log_run(
+    run_name=f"baseline_tfidf_logreg_{len(train_idx)}rows",
+    data=output,
+    artifact_paths=["data/processed/baseline_results.json"],
+    tags={"model_type": "baseline", "backfilled": "false"},
+)

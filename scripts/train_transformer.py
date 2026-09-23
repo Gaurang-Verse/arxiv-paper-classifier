@@ -7,7 +7,7 @@ import torch
 import yaml
 from transformers import Trainer, TrainingArguments
 from sklearn.metrics import f1_score
-
+from arxiv_classifier.tracking import log_run
 from arxiv_classifier.data.splitting import split_indices
 from arxiv_classifier.data.torch_dataset import ArxivTextDataset
 from arxiv_classifier.features.labels import build_label_matrix, load_label_space
@@ -131,3 +131,10 @@ with open(config["results_path"], "w") as f:
     json.dump(output, f, indent=2, default=str)
 
 print("Saved results to", config["results_path"])
+
+log_run(
+    run_name=f"distilbert_{len(train_idx)}rows",
+    data=output,
+    artifact_paths=[config["results_path"]],
+    tags={"model_type": "distilbert", "config_path": config_path, "backfilled": "false"},
+)
