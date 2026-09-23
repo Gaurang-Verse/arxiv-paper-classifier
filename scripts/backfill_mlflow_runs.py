@@ -1,5 +1,6 @@
-from arxiv_classifier.tracking import log_run
 import json
+
+from arxiv_classifier.tracking import log_run
 
 
 def backfill(json_path, run_name, model_type):

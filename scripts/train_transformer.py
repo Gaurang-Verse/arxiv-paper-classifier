@@ -4,8 +4,8 @@ import sys
 import numpy as np
 import torch
 import yaml
-from transformers import Trainer, TrainingArguments
 from sklearn.metrics import f1_score
+from transformers import Trainer, TrainingArguments
 
 from arxiv_classifier.data.torch_dataset import ArxivTextDataset
 from arxiv_classifier.models.transformer_model import build_model, build_tokenizer

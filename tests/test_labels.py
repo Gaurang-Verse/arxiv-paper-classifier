@@ -1,7 +1,6 @@
 import json
 
 import pandas as pd
-import pytest
 
 from arxiv_classifier.features.labels import build_label_matrix, load_label_space
 
