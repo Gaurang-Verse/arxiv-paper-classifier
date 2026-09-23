@@ -1,0 +1,5 @@
+model_dir: "data/processed/transformer_full_checkpoints/final"
+eda_stats_path: "data/processed/eda_stats.json"
+min_label_frequency: 50
+max_length: 256
+threshold: 0.20
