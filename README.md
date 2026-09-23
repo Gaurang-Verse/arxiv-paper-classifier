@@ -245,3 +245,7 @@ arXiv releases its metadata under
 Code is MIT licensed (see LICENSE). Dataset metadata is CC0 1.0 — see docs/dataset.md.
 
 Built by Gaurang Kumbhar.
+
+## License
+
+Code is MIT licensed (see LICENSE). Dataset metadata is CC0 1.0 — see docs/dataset.md.
