@@ -1,0 +1,25 @@
+sample_path: "data/processed/sample_150k.parquet"
+eda_stats_path: "data/processed/eda_stats.json"
+min_label_frequency: 50
+
+train_fraction: 0.8
+val_fraction: 0.1
+test_fraction: 0.1
+random_seed: 42
+
+train_subsample_size: null
+train_subsample_seed: 123
+
+model_name: "distilbert-base-uncased"
+max_length: 256
+
+training:
+  num_train_epochs: 3
+  per_device_train_batch_size: 32
+  per_device_eval_batch_size: 64
+  learning_rate: 2.0e-5
+  weight_decay: 0.01
+
+prediction_threshold: 0.5
+output_dir: "data/processed/transformer_full_checkpoints"
+results_path: "data/processed/transformer_full_results.json"
