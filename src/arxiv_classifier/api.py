@@ -5,16 +5,31 @@ reused across requests -- loading it per-request would be far too slow and
 wasteful, so this is a deliberate choice, not an accident.
 """
 
+import json
+import time
 from contextlib import asynccontextmanager
 
 import yaml
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import Response
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 from pydantic import BaseModel, Field
 
 from arxiv_classifier.inference import Predictor
 
 with open("configs/api.yaml") as f:
     API_CONFIG = yaml.safe_load(f)
+
+PREDICTION_REQUESTS = Counter(
+    "prediction_requests_total", "Total number of /predict requests received"
+)
+PREDICTION_LATENCY = Histogram(
+    "prediction_latency_seconds", "Time spent computing a single /predict response"
+)
+PREDICTED_CATEGORY_COUNT = Histogram(
+    "predicted_category_count", "Number of categories returned per prediction",
+    buckets=[0, 1, 2, 3, 4, 5, 10, 20],
+)
 
 
 @asynccontextmanager
@@ -57,16 +72,35 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+
 @app.post("/predict", response_model=PredictResponse)
 def predict(request: PredictRequest):
     predictor: Predictor = app.state.predictor
     if predictor is None:
         raise HTTPException(status_code=503, detail="Model not loaded")
 
+    start = time.perf_counter()
     text = f"{request.title} {request.abstract}"
     probabilities = predictor.predict_proba(text)
     threshold = request.threshold if request.threshold is not None else predictor.threshold
     predicted = [label for label, prob in probabilities.items() if prob >= threshold]
     predicted.sort(key=lambda label: probabilities[label], reverse=True)
+    latency = time.perf_counter() - start
+
+    PREDICTION_REQUESTS.inc()
+    PREDICTION_LATENCY.observe(latency)
+    PREDICTED_CATEGORY_COUNT.observe(len(predicted))
+
+    print(json.dumps({
+        "event": "prediction",
+        "latency_ms": round(latency * 1000, 2),
+        "threshold_used": threshold,
+        "num_predicted_categories": len(predicted),
+        "top_category": predicted[0] if predicted else None,
+    }))
 
     return PredictResponse(predicted_categories=predicted, probabilities=probabilities)

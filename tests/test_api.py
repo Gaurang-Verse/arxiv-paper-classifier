@@ -55,3 +55,9 @@ def test_predict_requires_title_and_abstract(client):
 def test_predict_rejects_empty_title(client):
     response = client.post("/predict", json={"title": "", "abstract": "text"})
     assert response.status_code == 422
+
+
+def test_metrics_endpoint_exposes_prometheus_format(client):
+    response = client.get("/metrics")
+    assert response.status_code == 200
+    assert b"prediction_requests_total" in response.content
