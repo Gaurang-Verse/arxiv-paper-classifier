@@ -30,7 +30,7 @@ def test_build_label_matrix_filters_and_orders_correctly():
     ])
     label_space = ["cs.AI", "cs.LG", "stat.ML"]
 
-    Y, mlb, keep_mask = build_label_matrix(categories, label_space)
+    Y, _mlb, keep_mask = build_label_matrix(categories, label_space)
 
     assert keep_mask.tolist() == [True, True, False, True]
     assert Y.shape == (3, 3)
@@ -42,6 +42,6 @@ def test_build_label_matrix_filters_and_orders_correctly():
 
 def test_build_label_matrix_empty_label_space_keeps_nothing():
     categories = pd.Series(["cs.LG", "cs.AI"])
-    Y, mlb, keep_mask = build_label_matrix(categories, label_space=["stat.ML"])
+    Y, _mlb, keep_mask = build_label_matrix(categories, label_space=["stat.ML"])
     assert keep_mask.tolist() == [False, False]
     assert Y.shape == (0, 1)
